@@ -9,14 +9,13 @@ load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "email_summarizer")
 
-# Create custom SSL context with certifi certificates
-ssl_context = ssl.create_default_context(cafile=certifi.where())
-
+# Use certifi CA bundle for SSL connection to Atlas
 client = AsyncIOMotorClient(
     MONGODB_URI,
     tls=True,
     tlsCAFile=certifi.where(),
     serverSelectionTimeoutMS=10000,
+    retryWrites=True,
 )
 db = client[DATABASE_NAME]
 
