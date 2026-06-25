@@ -23,8 +23,11 @@ CLIENT_CONFIG = {
 
 def get_auth_flow():
     """Create OAuth2 flow for Gmail authentication."""
-    flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES)
-    flow.redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
+    flow = Flow.from_client_config(
+        CLIENT_CONFIG,
+        scopes=SCOPES,
+        redirect_uri=os.getenv("GOOGLE_REDIRECT_URI"),
+    )
     return flow
 
 
