@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Summarizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Email Summarizer</h1>
+            <div class="header-actions">
+                <button id="btn-login" class="btn btn-primary">Connect Gmail</button>
+                <button id="btn-fetch" class="btn btn-secondary" disabled>Fetch Emails</button>
+            </div>
+        </header>
+
+        <div id="notification-toast" class="toast hidden" role="alert" aria-live="polite">
+            <div class="toast-content">
+                <span class="toast-icon">🔔</span>
+                <div class="toast-text">
+                    <strong id="toast-title"></strong>
+                    <p id="toast-message"></p>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <div class="stats-bar">
+                <div class="stat" id="stat-total">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat stat-high" id="stat-high">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">High Priority</span>
+                </div>
+                <div class="stat stat-medium" id="stat-medium">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Medium</span>
+                </div>
+                <div class="stat stat-low" id="stat-low">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Low</span>
+                </div>
+            </div>
+
+            <div class="email-list" id="email-list">
+                <p class="placeholder">Connect your Gmail to start receiving summarized emails.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
