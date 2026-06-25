@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Summarizer</title>
+    <title>Email AI Analyzer</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📧 Email Summarizer</h1>
+            <h1>📧 Email AI Analyzer</h1>
+            <p class="subtitle">Summarize • Sentiment • Spam Detection • Smart Insights</p>
             <div class="header-actions">
                 <button id="btn-login" class="btn btn-primary">Connect Gmail</button>
-                <button id="btn-fetch" class="btn btn-secondary" disabled>Fetch Emails</button>
+                <button id="btn-fetch" class="btn btn-secondary" disabled>Fetch & Analyze</button>
             </div>
         </header>
 
@@ -36,18 +37,30 @@
                     <span class="stat-value">0</span>
                     <span class="stat-label">High Priority</span>
                 </div>
-                <div class="stat stat-medium" id="stat-medium">
+                <div class="stat stat-spam" id="stat-spam">
                     <span class="stat-value">0</span>
-                    <span class="stat-label">Medium</span>
+                    <span class="stat-label">Spam/Phishing</span>
                 </div>
-                <div class="stat stat-low" id="stat-low">
+                <div class="stat stat-positive" id="stat-positive">
                     <span class="stat-value">0</span>
-                    <span class="stat-label">Low</span>
+                    <span class="stat-label">Positive</span>
+                </div>
+                <div class="stat stat-negative" id="stat-negative">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Negative</span>
                 </div>
             </div>
 
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="high">🔴 High Priority</button>
+                <button class="filter-btn" data-filter="spam">⚠️ Spam/Phishing</button>
+                <button class="filter-btn" data-filter="positive">😊 Positive</button>
+                <button class="filter-btn" data-filter="negative">😟 Negative</button>
+            </div>
+
             <div class="email-list" id="email-list">
-                <p class="placeholder">Connect your Gmail to start receiving summarized emails.</p>
+                <p class="placeholder">Connect your Gmail to start analyzing emails with AI.</p>
             </div>
         </main>
     </div>

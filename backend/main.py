@@ -49,20 +49,29 @@ async def root():
 
 # --- Auth Endpoints ---
 
+# Store code verifier between auth steps
+_auth_state = {}
+
+
 @app.get("/auth/login")
 async def login():
     """Redirect user to Google OAuth2 consent screen."""
     flow = get_auth_flow()
-    auth_url, _ = flow.authorization_url(
+    auth_url, state = flow.authorization_url(
         access_type="offline", prompt="consent"
     )
+    # Save the code verifier for the callback
+    _auth_state[state] = flow.code_verifier
     return RedirectResponse(auth_url)
 
 
 @app.get("/auth/callback")
-async def auth_callback(code: str):
+async def auth_callback(code: str, state: str = None):
     """Handle OAuth2 callback and store tokens."""
     flow = get_auth_flow()
+    # Restore the code verifier
+    if state and state in _auth_state:
+        flow.code_verifier = _auth_state.pop(state)
     flow.fetch_token(code=code)
     credentials = flow.credentials
 
@@ -132,8 +141,17 @@ async def trigger_fetch():
             "summary": llm_result["summary"],
             "importance": llm_result["importance"],
             "category": llm_result["category"],
+            "sentiment": llm_result["sentiment"],
+            "tone": llm_result["tone"],
+            "spam_classification": llm_result["spam_classification"],
+            "spam_confidence": llm_result["spam_confidence"],
+            "threat_level": llm_result["threat_level"],
             "action_required": llm_result["action_required"],
+            "reply_urgency": llm_result["reply_urgency"],
+            "suggested_reply": llm_result["suggested_reply"],
             "key_points": llm_result["key_points"],
+            "emotional_cues": llm_result["emotional_cues"],
+            "red_flags": llm_result["red_flags"],
             "received_at": email["received_at"],
             "processed_at": datetime.utcnow(),
         }
@@ -215,8 +233,17 @@ async def poll_emails():
                         "summary": llm_result["summary"],
                         "importance": llm_result["importance"],
                         "category": llm_result["category"],
+                        "sentiment": llm_result["sentiment"],
+                        "tone": llm_result["tone"],
+                        "spam_classification": llm_result["spam_classification"],
+                        "spam_confidence": llm_result["spam_confidence"],
+                        "threat_level": llm_result["threat_level"],
                         "action_required": llm_result["action_required"],
+                        "reply_urgency": llm_result["reply_urgency"],
+                        "suggested_reply": llm_result["suggested_reply"],
                         "key_points": llm_result["key_points"],
+                        "emotional_cues": llm_result["emotional_cues"],
+                        "red_flags": llm_result["red_flags"],
                         "received_at": email["received_at"],
                         "processed_at": datetime.utcnow(),
                     }
