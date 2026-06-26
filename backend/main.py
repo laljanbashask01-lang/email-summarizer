@@ -129,7 +129,9 @@ async def trigger_fetch():
 
         # Summarize with LLM
         llm_result = await summarize_email(
-            email["sender"], email["subject"], email["body"]
+            email["sender"], email["subject"], email["body"],
+            images=email.get("images", []),
+            attachments=email.get("attachments", []),
         )
 
         email_doc = {
@@ -152,6 +154,9 @@ async def trigger_fetch():
             "key_points": llm_result["key_points"],
             "emotional_cues": llm_result["emotional_cues"],
             "red_flags": llm_result["red_flags"],
+            "has_attachments": email.get("has_attachments", False),
+            "attachments": [a["filename"] for a in email.get("attachments", [])],
+            "images": [i["filename"] for i in email.get("images", [])],
             "received_at": email["received_at"],
             "processed_at": datetime.utcnow(),
         }
@@ -221,7 +226,9 @@ async def poll_emails():
                         continue
 
                     llm_result = await summarize_email(
-                        email["sender"], email["subject"], email["body"]
+                        email["sender"], email["subject"], email["body"],
+                        images=email.get("images", []),
+                        attachments=email.get("attachments", []),
                     )
 
                     email_doc = {

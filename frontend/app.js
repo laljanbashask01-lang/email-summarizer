@@ -136,6 +136,13 @@ function renderEmails() {
                 ${email.red_flags.map(f => `<span class="red-flag-tag">${escapeHtml(f)}</span>`).join('')}
             </div>` : ''}
 
+            ${email.has_attachments ? `
+            <div class="email-attachments">
+                <strong>📎 Attachments:</strong>
+                ${(email.images || []).map(i => `<span class="attach-tag image-tag">🖼️ ${escapeHtml(i)}</span>`).join('')}
+                ${(email.attachments || []).map(a => `<span class="attach-tag doc-tag">📄 ${escapeHtml(a)}</span>`).join('')}
+            </div>` : ''}
+
             ${email.emotional_cues && email.emotional_cues.length > 0 ? `
             <div class="email-emotions">
                 ${email.emotional_cues.map(e => `<span class="emotion-tag">${e}</span>`).join('')}

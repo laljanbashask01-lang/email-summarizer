@@ -1,18 +1,12 @@
 import os
 import json
-import ssl
-import certifi
-import google.generativeai as genai
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Fix SSL on Windows
-os.environ["GRPC_DEFAULT_SSL_ROOTS_FILE_PATH"] = certifi.where()
-os.environ["SSL_CERT_FILE"] = certifi.where()
-
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"), transport="rest")
-model = genai.GenerativeModel("gemini-2.5-flash")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 PROMPT_TEMPLATE = """You are an advanced email analyst AI. Analyze the following email thoroughly.
 
@@ -66,13 +60,31 @@ THREAT LEVEL:
 Respond ONLY with valid JSON, no markdown or extra text."""
 
 
-async def summarize_email(sender: str, subject: str, body: str) -> dict:
+async def summarize_email(sender: str, subject: str, body: str, images: list = None, attachments: list = None) -> dict:
     """Use Gemini to summarize and classify an email."""
-    prompt = PROMPT_TEMPLATE.format(sender=sender, subject=subject, body=body)
+    # Add attachment context to the prompt
+    attachment_info = ""
+    if images:
+        attachment_info += f"\n- Images attached: {', '.join(img['filename'] for img in images)}"
+    if attachments:
+        attachment_info += f"\n- Documents attached: {', '.join(att['filename'] for att in attachments)}"
+
+    body_with_attachments = body
+    if attachment_info:
+        body_with_attachments += f"\n\n[ATTACHMENTS]{attachment_info}"
+
+    prompt = PROMPT_TEMPLATE.format(sender=sender, subject=subject, body=body_with_attachments)
 
     try:
-        response = model.generate_content(prompt)
-        text = response.text.strip()
+        async with httpx.AsyncClient(verify=False, timeout=60) as client:
+            resp = await client.post(
+                GEMINI_URL,
+                params={"key": GEMINI_API_KEY},
+                json={"contents": [{"parts": [{"text": prompt}]}]},
+            )
+            resp.raise_for_status()
+            result_data = resp.json()
+            text = result_data["candidates"][0]["content"]["parts"][0]["text"].strip()
 
         # Clean up response if wrapped in code blocks
         if text.startswith("```"):
